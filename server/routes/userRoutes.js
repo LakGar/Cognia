@@ -11,13 +11,11 @@ const router = express.Router();
 
 router.post("/login", async (req, res) => {
   const { auth, password } = req.body;
-  console.log(`logging in user`);
+  console.log(`logging in user ${auth}`);
 
   try {
     // Find the user by email or phone number
-    const user = await User.findOne({
-      $or: [{ email: auth }, { phoneNumber: auth }],
-    });
+    const user = await User.findOne({ email: auth });
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -208,31 +206,31 @@ router.get("/careteam", auth, async (req, res) => {
 });
 
 router.put("/update", auth, async (req, res) => {
+  console.log("Updating user...");
   const {
     firstName,
     lastName,
-    bio,
     occupation,
     address,
-    privacySettings,
+    phoneNumber,
     profilePicture,
   } = req.body;
 
   try {
-    const user = await User.findById(req.user.id);
+    const user = await User.findById(req.userId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
     if (firstName) user.firstName = firstName;
     if (lastName) user.lastName = lastName;
-    if (bio) user.bio = bio;
     if (occupation) user.occupation = occupation;
     if (address) user.address = address;
-    if (privacySettings) user.privacySettings = privacySettings;
+    if (phoneNumber) user.phoneNumber = phoneNumber;
     if (profilePicture) user.profilePicture = profilePicture;
 
     await user.save();
+    console.log(`User updated: ${user}`);
     res.json(user);
   } catch (err) {
     console.error(err);

@@ -6,10 +6,12 @@ import {
   UIManager,
   Platform,
   Dimensions,
+  Modal,
 } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { globalStyles } from "../../styles/globalStyles";
 import moment from "moment";
+import FullCalenderCard from "./FullCalenderCard";
 
 const { width } = Dimensions.get("window");
 
@@ -19,33 +21,35 @@ if (Platform.OS === "android") {
     UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-const CalenderCard = ({ time, duration, title, status }) => {
+const CalenderCard = ({ time, duration, title, status, task }) => {
   const startTime = moment(time, "hh:mm A");
   const top = (startTime.hours() * 60 + startTime.minutes()) * (50 / 60); // Adjusting for 50px per hour
   const height = duration * 0.8333333;
   const isSmall = duration < 40 && duration > 30;
   const tooSmall = duration <= 30;
+  const [modalOpen, setModalOpen] = useState(false);
 
   const backgroundColor =
-    status === "Task"
-      ? "rgba(211, 227, 252, 0.6)"
-      : status === "Appointment"
-      ? "rgba(253, 226, 228, 0.6)"
-      : status === "Schedule"
-      ? "rgba(255, 229, 180, 0.6)"
-      : "rgba(247, 198, 224, 0.6)";
+    status === "personal"
+      ? "rgba(211, 227, 252, 0.8)"
+      : status === "schedule"
+      ? "rgba(253, 226, 228, 0.8)"
+      : status === "medication"
+      ? "rgba(255, 229, 180, 0.8)"
+      : "rgba(247, 198, 224, 0.8)";
 
   const titleColor =
-    status === "Task"
+    status === "personal"
       ? "#1B4F72"
-      : status === "Appointment"
+      : status === "schedule"
       ? "#C0392B"
-      : status === "Schedule"
+      : status === "medication"
       ? "#E67E22"
       : "#A569BD";
 
   return (
     <TouchableOpacity
+      onPress={() => setModalOpen(true)}
       style={[
         globalStyles.cardContainer,
         {
@@ -73,6 +77,16 @@ const CalenderCard = ({ time, duration, title, status }) => {
         {title}
       </Text>
       {/* <Text style={{ color: "black" }}>{time}</Text> */}
+      {modalOpen && (
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalOpen}
+          onRequestClose={() => setModalOpen(false)}
+        >
+          <FullCalenderCard task={task} setModalOpen={setModalOpen} />
+        </Modal>
+      )}
     </TouchableOpacity>
   );
 };

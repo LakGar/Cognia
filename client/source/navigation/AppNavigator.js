@@ -5,7 +5,8 @@ import MainNavigator from "./MainNavigator";
 import ModalSelector from "react-native-modal-selector";
 import MoodSelector from "../components/home/mood/MoodSelector";
 import TaskDetail from "../components/Details/TaskDetail";
-import EditProfile from "../components/Create/Edit/EditProfile";
+import EditProfile from "../components/Edit/EditProfile";
+import CreateTask from "../components/Create/CreateTask";
 
 const Stack = createStackNavigator();
 
@@ -16,6 +17,7 @@ const AppNavigator = () => {
       <Stack.Screen name="AddMood" component={MoodSelector} />
       <Stack.Screen name="TaskDetail" component={TaskDetail} />
       <Stack.Screen name="EditProfile" component={EditProfile} />
+      <Stack.Screen name="CreateTask" component={CreateTask} />
     </Stack.Navigator>
   );
 };

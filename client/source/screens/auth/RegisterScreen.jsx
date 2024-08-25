@@ -126,6 +126,7 @@ const RegisterScreen = () => {
               autoCapitalize="words"
               value={firstName}
               onChangeText={setFirstName}
+              placeholderTextColor={theme.subText}
             />
           </View>
           <View
@@ -141,6 +142,7 @@ const RegisterScreen = () => {
               autoCapitalize="words"
               value={lastName}
               onChangeText={setLastName}
+              placeholderTextColor={theme.subText}
             />
           </View>
         </View>
@@ -158,6 +160,7 @@ const RegisterScreen = () => {
             autoCapitalize="none"
             value={email}
             onChangeText={setEmail}
+            placeholderTextColor={theme.subText}
           />
         </View>
         <View
@@ -174,6 +177,7 @@ const RegisterScreen = () => {
             autoCapitalize="none"
             value={password}
             onChangeText={setPassword}
+            placeholderTextColor={theme.subText}
           />
           <TouchableOpacity
             onPress={() => setIsPaswordVisible(!isPaswordVissible)}

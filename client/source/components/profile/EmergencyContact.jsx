@@ -43,7 +43,7 @@ const EmergencyContact = () => {
             <View
               style={{ flexDirection: "row", justifyContent: "space-between" }}
             >
-              <Text style={[globalStyles.subTitle, { color: theme.text }]}>
+              <Text style={[globalStyles.subTitle, { color: "white" }]}>
                 Marry Jane
               </Text>
             </View>

@@ -14,9 +14,6 @@ import { useTheme } from "../../theme/ThemeContext";
 import Upcoming from "./Upcoming";
 import { globalStyles } from "../../styles/globalStyles";
 
-const profileImage =
-  "https://images.unsplash.com/photo-1722898614951-a158891a7495?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
-
 // Get device width
 const { width } = Dimensions.get("window");
 const today = new Date();
@@ -27,7 +24,7 @@ const formattedDate = today.toLocaleDateString("en-US", {
   day: "numeric",
 });
 
-const HomeHeader = () => {
+const HomeHeader = ({ firstName, profilePicture, tasks }) => {
   const navigation = useNavigation();
   const { theme, isDarkMode } = useTheme();
 
@@ -62,7 +59,7 @@ const HomeHeader = () => {
           }}
         >
           <Image
-            source={{ uri: profileImage }}
+            source={{ uri: profilePicture }}
             style={{
               width: 80,
               height: 80,
@@ -82,7 +79,7 @@ const HomeHeader = () => {
               color: theme.text, // Apply theme color to "Hello Lola!"
             }}
           >
-            Hello Lola! 👋
+            Hello {firstName}! 👋
           </Text>
           <Text
             style={{
@@ -127,7 +124,7 @@ const HomeHeader = () => {
         placeholder="Search..."
         placeholderTextColor={theme.subText} // Apply theme color to placeholder text
       />
-      <Upcoming />
+      <Upcoming tasks={tasks} />
     </View>
   );
 };

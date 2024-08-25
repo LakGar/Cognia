@@ -3,10 +3,12 @@ const { Schema } = mongoose;
 
 const taskSchema = new Schema({
   taskName: { type: String, required: true },
-  description: { type: String, required: true },
-  assignedTo: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  description: { type: String },
+  assignedTo: { type: Schema.Types.ObjectId, ref: "User" },
   assignedBy: { type: Schema.Types.ObjectId, ref: "User" },
   dueDate: { type: Date, required: true },
+  dueTime: { type: Date, required: true },
+  durations: { type: Number, required: true },
   status: {
     type: String,
     enum: ["due", "in-progress", "completed", "overdue"],

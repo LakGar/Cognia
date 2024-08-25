@@ -28,32 +28,16 @@ const ProfileHeader = () => {
 
   useEffect(() => {
     if (userInfo) {
-      const {
-        firstName,
-        lastName,
-        email,
-        profilePicture,
-        isEmailVerified,
-        isPhoneVerified,
-        careTeam,
-        task,
-        appointment,
-        carePlan,
-        notifications,
-        messages,
-        activityLog,
-      } = userInfo;
+      const { firstName, lastName, Gender, Occupation, address } = userInfo;
 
       const hasMinimalInfo =
-        !isEmailVerified &&
-        !isPhoneVerified &&
-        careTeam.length === 0 &&
-        task.length === 0 &&
-        appointment.length === 0 &&
-        carePlan.length === 0 &&
-        notifications.length === 0 &&
-        messages.length === 0 &&
-        activityLog.length === 0;
+        address?.street === "" &&
+        address.city === "" &&
+        address.state === "" &&
+        address.zip === "" &&
+        address.country === "" &&
+        phoneNumber === "" &&
+        occupation === "";
 
       if (hasMinimalInfo) {
         navigation.navigate("EditProfile");
@@ -158,19 +142,7 @@ const ProfileHeader = () => {
           </View>
         </View>
       </View>
-      <TouchableOpacity
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          gap: 2,
-          width: "100%",
-          paddingHorizontal: 20,
-          marginBottom: 10,
-        }}
-      >
-        <Ionicons name="pencil" size={18} color="grey" />
-        <Text style={[globalStyles.username]}>Add bio</Text>
-      </TouchableOpacity>
+
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={[globalStyles.button, { backgroundColor: theme.accent }]}

@@ -35,7 +35,7 @@ const LoginScreen = () => {
     setLoading(true);
     try {
       // Call the login function
-      const response = await userServices.login({ email, password });
+      const response = await userServices.login({ auth: email, password });
       const { token } = response;
 
       // Store token and update auth state
@@ -117,6 +117,7 @@ const LoginScreen = () => {
             autoCapitalize="none"
             value={email}
             onChangeText={setEmail}
+            placeholderTextColor={"grey"}
           />
         </View>
         <View
@@ -133,6 +134,7 @@ const LoginScreen = () => {
             autoCapitalize="none"
             value={password}
             onChangeText={setPassword}
+            placeholderTextColor={"grey"}
           />
           <TouchableOpacity
             onPress={() => setIsPaswordVisible(!isPaswordVissible)}

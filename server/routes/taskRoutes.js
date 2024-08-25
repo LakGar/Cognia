@@ -7,6 +7,7 @@ const { default: mongoose } = require("mongoose");
 const router = express.Router();
 
 // Add a new task
+
 router.post("/task", auth, async (req, res) => {
   const {
     taskName,
@@ -14,10 +15,13 @@ router.post("/task", auth, async (req, res) => {
     assignedTo,
     assignedBy,
     dueDate,
+    dueTime, // Ensure this is included
+    durations, // Ensure this is included
     status,
     priority,
     type,
   } = req.body;
+  console.log("Creating Task... ");
 
   try {
     // Validate required fields
@@ -25,20 +29,25 @@ router.post("/task", auth, async (req, res) => {
       return res.status(400).json({ message: "AssignedTo field is required" });
     }
 
-    // Check if assignedBy is a valid ObjectId or omit it if not provided
+    // Construct the taskData object
     const taskData = {
       taskName,
       description,
       assignedTo,
-      dueDate,
+      assignedBy,
+      dueDate, // Use the combined Date object
+      dueTime, // Assign the same Date object for dueTime
+      durations,
       status,
       priority,
       type,
     };
 
-    if (assignedBy && mongoose.Types.ObjectId.isValid(assignedBy)) {
-      taskData.assignedBy = assignedBy;
-    }
+    console.log(`taskData: ${JSON.stringify(taskData)}`); // For debugging
+
+    // if (assignedBy && mongoose.Types.ObjectId.isValid(assignedBy)) {
+    //   taskData.assignedBy = assignedBy;
+    // }
 
     // Create a new task
     const task = new Task(taskData);

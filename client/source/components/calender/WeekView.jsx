@@ -12,16 +12,19 @@ import Swiper from "react-native-swiper";
 import { useTheme } from "../../theme/ThemeContext";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import TaskView from "./TaskView";
-
+import { useNavigation } from "@react-navigation/native";
 const { width } = Dimensions.get("window");
 
-const WeekView = () => {
+const WeekView = ({ tasks }) => {
+  const navigation = useNavigation();
   const swiper = useRef();
   const { theme } = useTheme();
   const [value, setValue] = useState(new Date());
   const [week, setWeek] = useState(0);
   const today = new Date();
   const [view, setView] = useState(true);
+
+  console.log("Tasks: " + JSON.stringify(tasks, null, 2));
 
   const weeks = React.useMemo(() => {
     const start = moment().add(week, "week").startOf("week");
@@ -97,6 +100,7 @@ const WeekView = () => {
               justifyContent: "center",
               alignItems: "center",
             }}
+            onPress={() => navigation.navigate("CreateTask")}
           >
             <Ionicons name="add" size={24} color={"white"} />
           </TouchableOpacity>
@@ -171,7 +175,7 @@ const WeekView = () => {
       <View style={{ flex: 1, paddingHorizontal: 16 }}>
         <Text style={styles.subtitle}>{value.toDateString()}</Text>
         <View style={styles.placeholder}>
-          <TaskView />
+          <TaskView tasks={tasks} activeDate={value} />
         </View>
       </View>
       <View style={styles.footer}>
@@ -181,7 +185,7 @@ const WeekView = () => {
         <TouchableOpacity onPress={() => {}}>
           <Text style={[styles.btnText, { color: theme.accent }]}>All</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => {}}>
+        <TouchableOpacity onPress={() => navigation.navigate("CreateTask")}>
           <Text style={[styles.btnText, { color: theme.accent }]}>
             Schedule
           </Text>

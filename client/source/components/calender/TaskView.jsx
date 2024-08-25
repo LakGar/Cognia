@@ -2,11 +2,12 @@ import { Dimensions, ScrollView, StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { useTheme } from "../../theme/ThemeContext";
 import CalenderCard from "../cards/CalenderCards";
+import moment from "moment";
 
 const { width } = Dimensions.get("window");
 
-const TaskView = () => {
-  const { theme } = useTheme();
+const TaskView = ({ tasks, activeDate }) => {
+  const { theme, isDarkMode } = useTheme();
 
   // Function to generate hours from 12 AM to 12 AM
   const generateHours = () => {
@@ -34,7 +35,13 @@ const TaskView = () => {
             {hourLabel}
           </Text>
           <View
-            style={{ flex: 1, height: 0.4, backgroundColor: "grey" }}
+            style={{
+              flex: 1,
+              height: 0.4,
+              backgroundColor: isDarkMode
+                ? "rgba(255,255,255,0.3)"
+                : "rgba(0,0,0,0.3)",
+            }}
           ></View>
         </View>
       );
@@ -42,32 +49,10 @@ const TaskView = () => {
     return hours;
   };
 
-  const events = [
-    {
-      time: "10:00 AM",
-      duration: 60,
-      title: "Doctor's Appointment",
-      type: "appointment",
-    },
-    {
-      time: "02:00 PM",
-      duration: 120,
-      title: "Meeting with Caregiver",
-      type: "task",
-    },
-    {
-      time: "09:00 AM",
-      duration: 30,
-      title: "Morning Medication",
-      type: "prescription",
-    },
-    {
-      time: "04:00 PM",
-      duration: 90,
-      title: "Exercise Routine",
-      type: "schedule",
-    },
-  ];
+  // Filter and sort tasks based on the active date
+  const filteredTasks = tasks
+    .filter((task) => moment(task.dueDate).isSame(activeDate, "day"))
+    .sort((a, b) => moment(a.dueTime).diff(moment(b.dueTime)));
 
   return (
     <View style={{ position: "relative", flex: 1 }}>
@@ -79,42 +64,16 @@ const TaskView = () => {
           }}
         >
           {generateHours()}
-          <CalenderCard
-            title="Dinner"
-            time="6:00PM"
-            duration={25}
-            status="Schedule"
-          />
-          <CalenderCard
-            title="Doctor's Appointment"
-            time="09:00AM"
-            duration={240}
-            status="Appointment"
-          />
-          <CalenderCard
-            title="Doctor's Appointment"
-            time="02:00PM"
-            duration={80}
-            status="Task"
-          />
-          <CalenderCard
-            title="Book Club"
-            time="11:00PM"
-            duration={120}
-            status="Task"
-          />
-          <CalenderCard
-            title="Take Tylenol"
-            time="02:00AM"
-            duration={20}
-            status="Prescription"
-          />
-          <CalenderCard
-            title="Do the Laundry"
-            time="06:30AM"
-            duration={320}
-            status="Task"
-          />
+          {filteredTasks.map((task) => (
+            <CalenderCard
+              key={task._id}
+              title={task.taskName}
+              time={moment(task.dueTime).format("hh:mm A")}
+              duration={task.durations}
+              status={task.type}
+              task={task}
+            />
+          ))}
         </View>
       </ScrollView>
     </View>

@@ -13,7 +13,7 @@ export const globalStyles = StyleSheet.create({
   //Button
   button: {
     flex: 1,
-    maHeight: 50,
+    maxHeight: 50,
     borderRadius: 3,
   },
 

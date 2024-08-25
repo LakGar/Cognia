@@ -68,6 +68,7 @@ const authSlice = createSlice({
     userToken: null,
     userInfo: null,
     error: null,
+    loading: false, // Add loading state
   },
   reducers: {
     setAuthState: (state, action) => {
@@ -83,24 +84,50 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(getUserInfo.pending, (state) => {
+        state.loading = true;
+      })
       .addCase(getUserInfo.fulfilled, (state, action) => {
+        state.loading = false;
         state.userInfo = action.payload;
       })
       .addCase(getUserInfo.rejected, (state, action) => {
+        state.loading = false;
         state.error = action.payload;
       })
+      .addCase(updateUser.pending, (state) => {
+        state.loading = true;
+      })
       .addCase(updateUser.fulfilled, (state, action) => {
+        state.loading = false;
         state.userInfo = action.payload;
       })
       .addCase(updateUser.rejected, (state, action) => {
+        state.loading = false;
         state.error = action.payload;
       })
+      .addCase(deleteUser.pending, (state) => {
+        state.loading = true;
+      })
       .addCase(deleteUser.fulfilled, (state) => {
+        state.loading = false;
         state.isAuthenticated = false;
         state.userToken = null;
         state.userInfo = null;
       })
       .addCase(deleteUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(getUserById.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getUserById.fulfilled, (state, action) => {
+        state.loading = false;
+        state.userInfo = action.payload;
+      })
+      .addCase(getUserById.rejected, (state, action) => {
+        state.loading = false;
         state.error = action.payload;
       });
   },

@@ -10,29 +10,39 @@ import EmergencyButton from "../../components/home/EmergencyButton";
 import { useTheme } from "../../theme/ThemeContext";
 import { useDispatch, useSelector } from "react-redux";
 import { getUserInfo } from "../../redux/authSlice";
+import { fetchTasks } from "../../redux/taskSlice";
 
 const PatientHome = () => {
-  const { theme, isDarkMode } = useTheme();
+  const { theme } = useTheme();
   const dispatch = useDispatch();
   const { userInfo, userToken } = useSelector((state) => state.auth);
+  const tasks = useSelector((state) => state.tasks?.tasks || []);
+  const loading = useSelector((state) => state.tasks?.loading);
 
   useEffect(() => {
     if (userToken && !userInfo) {
       dispatch(getUserInfo(userToken));
     }
-  }, [dispatch, userToken, userInfo]);
+    if (userToken && !tasks.length) {
+      dispatch(fetchTasks(userToken));
+    }
+  }, [dispatch, userToken, userInfo, tasks.length]);
 
-  console.log("userInfo: ", userInfo);
   return (
     <View
       style={[
         globalStyles.screenContainer,
-
         { paddingTop: 0, backgroundColor: theme.backgroundColor },
       ]}
     >
       <ScrollView style={{ width: "100%", flex: 1 }}>
-        <HomeHeader />
+        {userInfo && (
+          <HomeHeader
+            firstName={userInfo.firstName}
+            profilePicture={userInfo.profilePicture}
+            tasks={tasks}
+          />
+        )}
         <DailySummary />
         <SectionSleepMood />
         <StepsNActivityTracker />

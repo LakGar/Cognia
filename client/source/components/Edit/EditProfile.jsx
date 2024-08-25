@@ -10,13 +10,13 @@ import {
   Platform,
 } from "react-native";
 import React, { useState, useEffect } from "react";
-import { globalStyles } from "../../../styles/globalStyles";
-import { useTheme } from "../../../theme/ThemeContext";
+import { globalStyles } from "../../styles/globalStyles";
+import { useTheme } from "../../theme/ThemeContext";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { useDispatch, useSelector } from "react-redux";
-import { updateUser } from "../../../redux/authSlice";
+import { updateUser } from "../../redux/authSlice";
 import * as ImagePicker from "expo-image-picker";
 
 const EditProfile = () => {
@@ -29,14 +29,10 @@ const EditProfile = () => {
 
   const [firstName, setFirstName] = useState(userInfo.firstName || "");
   const [lastName, setLastName] = useState(userInfo.lastName || "");
-  const [username, setUsername] = useState(userInfo.username || "");
-  const [bio, setBio] = useState(userInfo.bio || "");
   const [gender, setGender] = useState(userInfo.gender || "Male");
   const [occupation, setOccupation] = useState(userInfo.occupation || "");
   const [address, setAddress] = useState(userInfo.address || {});
-  const [privacySettings, setPrivacySettings] = useState(
-    userInfo.privacySettings || {}
-  );
+  const [phoneNumber, setPhoneNumber] = useState(userInfo.phoneNumber || "");
 
   useEffect(() => {
     getPermissionAsync();
@@ -79,14 +75,12 @@ const EditProfile = () => {
     dispatch(
       updateUser({
         token: userToken,
-        username,
         firstName,
         lastName,
-        bio,
         profilePicture: profileImage,
         occupation,
+        phoneNumber,
         address,
-        privacySettings,
       })
     );
     navigation.navigate("Profile");
@@ -183,16 +177,18 @@ const EditProfile = () => {
               { borderBottomColor: isDarkMode ? "gray" : "lightgrey" },
             ]}
           >
-            <Text style={[styles.label, { color: theme.text }]}>Username</Text>
+            <Text style={[styles.label, { color: theme.text }]}>
+              Phone number
+            </Text>
             <TextInput
               style={[styles.input, { color: theme.text }]}
-              value={username}
-              onChangeText={setUsername}
-              placeholder="Username"
+              value={userInfo.phoneNumber}
+              onChangeText={setPhoneNumber}
+              placeholder="phone number"
               placeholderTextColor="grey"
+              keyboardType="phone-pad"
             />
           </View>
-
           <View
             style={[
               styles.formRow,
@@ -205,22 +201,6 @@ const EditProfile = () => {
               value={gender}
               onChangeText={setGender}
               placeholder="Pronouns"
-              placeholderTextColor="grey"
-            />
-          </View>
-
-          <View
-            style={[
-              styles.formRow,
-              { borderBottomColor: isDarkMode ? "gray" : "lightgrey" },
-            ]}
-          >
-            <Text style={[styles.label, { color: theme.text }]}>Bio</Text>
-            <TextInput
-              style={[styles.input, { color: theme.text }]}
-              value={bio}
-              onChangeText={setBio}
-              placeholder="Bio"
               placeholderTextColor="grey"
             />
           </View>

@@ -9,7 +9,7 @@ import ScheduleList from "./upcoming/ScheduleList";
 import SearchUpcoming from "./upcoming/SearchUpcoming";
 import { useTheme } from "../../theme/ThemeContext";
 
-const Upcoming = () => {
+const Upcoming = ({ tasks }) => {
   const [activeList, setActiveList] = useState("All"); // Default active list
   const [search, setSearch] = useState(false); // Flag to show search input
   const { theme, isDarkMode } = useTheme();

@@ -10,6 +10,7 @@ const register = async (userData) => {
 
 // Login user
 const login = async (userData) => {
+  console.log(`User ${userData}`);
   const response = await axios.post(`${API_URL}/login`, userData);
   return response.data;
 };
@@ -43,11 +44,7 @@ const updateUserProfile = async (token, userId, userData) => {
       Authorization: `Bearer ${token}`,
     },
   };
-  const response = await axios.put(
-    `${API_URL}/${userId}/profile`,
-    userData,
-    config
-  );
+  const response = await axios.put(`${API_URL}/update`, userData, config);
   return response.data;
 };
 

@@ -16,8 +16,8 @@ const PatientHome = () => {
   const { theme } = useTheme();
   const dispatch = useDispatch();
   const { userInfo, userToken } = useSelector((state) => state.auth);
-  const tasks = useSelector((state) => state.tasks?.tasks || []);
-  const loading = useSelector((state) => state.tasks?.loading);
+  const tasks = useSelector((state) => state.task.tasks);
+  const loading = useSelector((state) => state.task?.loading);
 
   useEffect(() => {
     if (userToken && !userInfo) {
@@ -43,7 +43,7 @@ const PatientHome = () => {
             tasks={tasks}
           />
         )}
-        <DailySummary />
+        <DailySummary tasks={tasks} />
         <SectionSleepMood />
         <StepsNActivityTracker />
         <SupplementaryButtons />

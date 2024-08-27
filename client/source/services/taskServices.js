@@ -11,9 +11,7 @@ const createTask = async (token, taskData) => {
       },
     };
 
-    console.log("Sending request to backend with data:", taskData);
     const response = await axios.post(`${API_URL}/task`, taskData, config);
-    console.log("Response from backend:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error in createTask Axios request:", error);

@@ -5,26 +5,24 @@ import moment from "moment";
 import { globalStyles } from "../../styles/globalStyles";
 import { useTheme } from "../../theme/ThemeContext";
 
-const DailySummary = () => {
+const DailySummary = ({ tasks }) => {
   const today = moment().startOf("day");
   const { theme } = useTheme();
 
-  // Dummy data for tasks
-  const tasks = [
-    { id: 1, type: "medication", status: "completed", title: "Take Aspirin" },
-    { id: 2, type: "medication", status: "pending", title: "Take Vitamin D" },
-    { id: 3, type: "task", status: "completed", title: "Walk 30 minutes" },
-    { id: 4, type: "task", status: "pending", title: "Read a book" },
-    { id: 5, type: "task", status: "completed", title: "Stretching exercises" },
-  ];
+  // Filter tasks based on today's date
+  const tasksForToday = tasks.filter((task) =>
+    moment(task.dueDate).isSame(today, "day")
+  );
 
-  const medicationTasks = tasks.filter((task) => task.type === "medication");
-  const otherTasks = tasks.filter((task) => task.type !== "medication");
+  // Further filter tasks by type
+  const medicationTasks = tasksForToday.filter(
+    (task) => task.type === "medication"
+  );
+  const otherTasks = tasksForToday.filter((task) => task.type !== "medication");
 
   const countCompletedTasks = (tasks) => {
     return tasks.filter((task) => task.status === "completed").length;
   };
-
   const renderTaskCard = (title, tasks, type) => {
     const totalTasks = tasks.length;
     const completedTasks = countCompletedTasks(tasks);
@@ -87,13 +85,6 @@ const DailySummary = () => {
               justifyContent: "center",
             },
           ]}
-          onPress={() =>
-            console.log(
-              type === "medication"
-                ? "Navigating to AddMedication"
-                : "Navigating to CreateTask"
-            )
-          }
         >
           <Text
             style={[

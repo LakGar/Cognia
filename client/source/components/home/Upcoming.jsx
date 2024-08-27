@@ -48,7 +48,7 @@ const Upcoming = ({ tasks }) => {
         {activeList === "All" ? (
           <All />
         ) : activeList === "Tasks" ? (
-          <TaskList />
+          <TaskList tasks={tasks} />
         ) : activeList === "Appt" ? (
           <ApptList />
         ) : activeList == "Schedule" ? (

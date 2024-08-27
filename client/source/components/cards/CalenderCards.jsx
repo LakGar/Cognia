@@ -29,23 +29,28 @@ const CalenderCard = ({ time, duration, title, status, task }) => {
   const tooSmall = duration <= 30;
   const [modalOpen, setModalOpen] = useState(false);
 
+  const type = task.type;
   const backgroundColor =
-    status === "personal"
-      ? "rgba(211, 227, 252, 0.8)"
-      : status === "schedule"
-      ? "rgba(253, 226, 228, 0.8)"
-      : status === "medication"
-      ? "rgba(255, 229, 180, 0.8)"
-      : "rgba(247, 198, 224, 0.8)";
+    type === "appointment"
+      ? "#D3E3FC"
+      : type === "schedule"
+      ? "#FDE2E4"
+      : type === "personal"
+      ? "#FFE5B4"
+      : type === "medication"
+      ? "#F7C6E0"
+      : null;
 
   const titleColor =
-    status === "personal"
+    type === "appointment"
       ? "#1B4F72"
-      : status === "schedule"
+      : type === "schedule"
       ? "#C0392B"
-      : status === "medication"
+      : type === "personal"
       ? "#E67E22"
-      : "#A569BD";
+      : type == "medication"
+      ? "#A569BD"
+      : null;
 
   return (
     <TouchableOpacity
@@ -84,7 +89,7 @@ const CalenderCard = ({ time, duration, title, status, task }) => {
           visible={modalOpen}
           onRequestClose={() => setModalOpen(false)}
         >
-          <FullCalenderCard task={task} setModalOpen={setModalOpen} />
+          <FullCalenderCard task={task} setModal={setModalOpen} />
         </Modal>
       )}
     </TouchableOpacity>

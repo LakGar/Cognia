@@ -47,6 +47,7 @@ export const globalStyles = StyleSheet.create({
     marginVertical: 10,
     marginLeft: 10,
     height: 255,
+    minWidth: 250,
   },
 
   cardHeaderContainer: {

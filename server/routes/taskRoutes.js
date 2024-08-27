@@ -115,9 +115,20 @@ router.get("/task/:id", auth, async (req, res) => {
 // Update a task by ID
 router.put("/task/:id", auth, async (req, res) => {
   const { id } = req.params;
-  const { taskName, description, dueDate, status, priority, type } = req.body;
+  const {
+    taskName,
+    description,
+    dueDate,
+    dueTime,
+    durations,
+    status,
+    priority,
+    type,
+  } = req.body;
   console.log("taskName: ", taskName);
   console.log("dueDate: ", dueDate);
+  console.log("dueTime: ", dueTime);
+  console.log("durations: ", durations);
   console.log("status: ", status);
   console.log("priority: ", priority);
   console.log("type: ", type);
@@ -134,6 +145,8 @@ router.put("/task/:id", auth, async (req, res) => {
     if (status) task.status = status;
     if (priority) task.priority = priority;
     if (type) task.type = type;
+    if (dueTime) task.dueTime = dueTime;
+    if (durations) task.durations = durations;
 
     await task.save();
     console.log(`Task saved ${task}`);

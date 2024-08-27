@@ -16,7 +16,7 @@ import { updateTask, deleteTask } from "../../redux/taskSlice";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { globalStyles } from "../../styles/globalStyles";
 
-const FullCalenderCard = ({ task }) => {
+const FullCalenderCard = ({ task, setModal }) => {
   const { theme, isDarkMode } = useTheme();
   const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -32,25 +32,33 @@ const FullCalenderCard = ({ task }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
 
+  const assignedBy = task.assignedBy;
+  const assignedTo = task.assignedTo || "";
+
   const status = task.status;
 
+  const type = task.type;
   const backgroundColor =
-    status === "Completed"
+    type === "appointment"
       ? "#D3E3FC"
-      : status === "missed"
+      : type === "schedule"
       ? "#FDE2E4"
-      : status === "in progress"
+      : type === "personal"
       ? "#FFE5B4"
-      : "#F7C6E0";
+      : type === "medication"
+      ? "#F7C6E0"
+      : null;
 
   const titleColor =
-    status === "Completed"
+    type === "appointment"
       ? "#1B4F72"
-      : status === "missed"
+      : type === "schedule"
       ? "#C0392B"
-      : status === "in progress"
+      : type === "personal"
       ? "#E67E22"
-      : "#A569BD";
+      : type == "medication"
+      ? "#A569BD"
+      : null;
 
   const handleUpdateTask = () => {
     const updatedTaskData = {
@@ -69,7 +77,7 @@ const FullCalenderCard = ({ task }) => {
         taskData: updatedTaskData,
       })
     ).then(() => {
-      navigation.navigate("Task");
+      setModal(false);
     });
   };
   const handleChangeStatus = () => {
@@ -82,6 +90,7 @@ const FullCalenderCard = ({ task }) => {
       priority,
       status: "completed",
     };
+    console.log(`updating task ${updatedTaskData}`);
 
     dispatch(
       updateTask({
@@ -90,7 +99,7 @@ const FullCalenderCard = ({ task }) => {
         taskData: updatedTaskData,
       })
     ).then(() => {
-      navigation.navigate("Task");
+      setModal(false);
     });
   };
 
@@ -108,7 +117,7 @@ const FullCalenderCard = ({ task }) => {
           onPress: () => {
             dispatch(deleteTask({ token: userToken, taskId: task._id })).then(
               () => {
-                navigation.navigate("Task");
+                setModal(false);
               }
             );
           },
@@ -137,8 +146,8 @@ const FullCalenderCard = ({ task }) => {
       }}
     >
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.Task()}>
-          <Icon name="chevron-back" size={26} color={titleColor} />
+        <TouchableOpacity onPress={() => setModal(false)}>
+          <Icon name="chevron-down" size={26} color={titleColor} />
         </TouchableOpacity>
         <Text
           style={[
@@ -287,31 +296,24 @@ const FullCalenderCard = ({ task }) => {
       <View style={[globalStyles.avatarContainer, { marginVertical: 20 }]}>
         <Image
           source={{
-            uri: "https://randomuser.me/api/portraits/men/1.jpg",
+            uri: assignedTo.profilePicture,
           }}
           style={[
             globalStyles.personImage,
             { width: 80, height: 80, borderRadius: "50%" },
           ]}
         />
-        <Image
-          source={{
-            uri: "https://randomuser.me/api/portraits/women/2.jpg",
-          }}
-          style={[
-            globalStyles.personImage,
-            { width: 80, height: 80, borderRadius: "50%" },
-          ]}
-        />
-        <Image
-          source={{
-            uri: "https://randomuser.me/api/portraits/men/3.jpg",
-          }}
-          style={[
-            globalStyles.personImage,
-            { width: 80, height: 80, borderRadius: "50%" },
-          ]}
-        />
+        {!assignedBy === "" && (
+          <Image
+            source={{
+              uri: assignedBy.profilePicture,
+            }}
+            style={[
+              globalStyles.personImage,
+              { width: 80, height: 80, borderRadius: "50%" },
+            ]}
+          />
+        )}
       </View>
       <TouchableOpacity
         style={[

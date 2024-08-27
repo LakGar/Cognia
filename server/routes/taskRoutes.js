@@ -15,8 +15,8 @@ router.post("/task", auth, async (req, res) => {
     assignedTo,
     assignedBy,
     dueDate,
-    dueTime, // Ensure this is included
-    durations, // Ensure this is included
+    dueTime,
+    durations,
     status,
     priority,
     type,
@@ -29,14 +29,35 @@ router.post("/task", auth, async (req, res) => {
       return res.status(400).json({ message: "AssignedTo field is required" });
     }
 
-    // Construct the taskData object
+    // Fetch assignedTo user details
+    const assignedToUser = await User.findById(
+      assignedTo,
+      "firstName lastName email profilePicture"
+    );
+    if (!assignedToUser) {
+      return res.status(404).json({ message: "AssignedTo user not found" });
+    }
+
+    // Fetch assignedBy user details if provided
+    let assignedByUser = null;
+    if (assignedBy) {
+      assignedByUser = await User.findById(
+        assignedBy,
+        "firstName lastName email profilePicture"
+      );
+      if (!assignedByUser) {
+        return res.status(404).json({ message: "AssignedBy user not found" });
+      }
+    }
+
+    // Construct the taskData object with limited fields
     const taskData = {
       taskName,
       description,
-      assignedTo,
-      assignedBy,
-      dueDate, // Use the combined Date object
-      dueTime, // Assign the same Date object for dueTime
+      assignedTo: assignedToUser._id,
+      assignedBy: assignedByUser ? assignedByUser._id : null,
+      dueDate,
+      dueTime,
       durations,
       status,
       priority,
@@ -45,47 +66,43 @@ router.post("/task", auth, async (req, res) => {
 
     console.log(`taskData: ${JSON.stringify(taskData)}`); // For debugging
 
-    // if (assignedBy && mongoose.Types.ObjectId.isValid(assignedBy)) {
-    //   taskData.assignedBy = assignedBy;
-    // }
-
     // Create a new task
     const task = new Task(taskData);
     const savedTask = await task.save();
 
-    // Find the assigned patient
-    const patient = await User.findById(assignedTo);
-    if (!patient) {
-      return res.status(404).json({ message: "Assigned patient not found" });
-    }
-    patient.task.push(savedTask._id);
-    await patient.save();
+    // Add task to assignedTo user's task list
+    if (!assignedToUser.task) assignedToUser.task = [];
+    assignedToUser.task.push(savedTask._id);
+    await assignedToUser.save();
 
-    // Update assigner tasks if assignedBy is valid and exists
-    if (taskData.assignedBy) {
-      const assigner = await User.findById(assignedBy);
-      if (!assigner) {
-        return res.status(404).json({ message: "Assigner not found" });
-      }
-      assigner.task.push(savedTask._id);
-      await assigner.save();
+    // Add task to assignedBy user's task list if applicable
+    if (assignedByUser) {
+      if (!assignedByUser.task) assignedByUser.task = [];
+      assignedByUser.task.push(savedTask._id);
+      await assignedByUser.save();
     }
 
-    // Respond with the created task
-    res.status(201).json(savedTask);
+    // Populate the assignedTo and assignedBy fields with user data
+    const populatedTask = await savedTask.populate([
+      { path: "assignedTo", select: "firstName lastName email profilePicture" },
+      { path: "assignedBy", select: "firstName lastName email profilePicture" },
+    ]);
+
+    // Respond with the populated task
+    res.status(201).json(populatedTask);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
   }
 });
 
-// Get all tasks
+// Get all tasks// Get all tasks
 router.get("/", auth, async (req, res) => {
   try {
-    const tasks = await Task.find().populate(
-      "assignedTo assignedBy",
-      "-password"
-    );
+    const tasks = await Task.find().populate({
+      path: "assignedTo assignedBy",
+      select: "firstName lastName email profilePicture",
+    });
     res.json(tasks);
   } catch (err) {
     console.error(err);

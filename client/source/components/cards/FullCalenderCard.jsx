@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateTask, deleteTask } from "../../redux/taskSlice";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { globalStyles } from "../../styles/globalStyles";
+import userService from "../../services/userServices";
 
 const FullCalenderCard = ({ task, setModal }) => {
   const { theme, isDarkMode } = useTheme();
@@ -28,14 +29,16 @@ const FullCalenderCard = ({ task, setModal }) => {
   const [dueTime, setDueTime] = useState(new Date(task.dueTime));
   const [duration, setDuration] = useState(task.durations);
   const [priority, setPriority] = useState(task.priority);
+  const [patient, setPatient] = useState(null);
+  const [patientProfile, setPatientProfile] = useState("");
 
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
 
-  const assignedBy = task.assignedBy;
-  const assignedTo = task.assignedTo || "";
+  const assignedBy = task.assignedBy || "";
+  const assignedTo = task.assignedTo;
 
-  const status = task.status;
+  // Fetch patient data when the component mounts
 
   const type = task.type;
   const backgroundColor =
@@ -90,7 +93,6 @@ const FullCalenderCard = ({ task, setModal }) => {
       priority,
       status: "completed",
     };
-    console.log(`updating task ${updatedTaskData}`);
 
     dispatch(
       updateTask({
@@ -296,14 +298,14 @@ const FullCalenderCard = ({ task, setModal }) => {
       <View style={[globalStyles.avatarContainer, { marginVertical: 20 }]}>
         <Image
           source={{
-            uri: assignedTo.profilePicture,
+            uri: assignedTo?.profilePicture,
           }}
           style={[
             globalStyles.personImage,
             { width: 80, height: 80, borderRadius: "50%" },
           ]}
         />
-        {!assignedBy === "" && (
+        {!assignedTo === "" && (
           <Image
             source={{
               uri: assignedBy.profilePicture,

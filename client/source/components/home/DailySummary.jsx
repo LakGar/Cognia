@@ -4,8 +4,10 @@ import Icon from "react-native-vector-icons/Ionicons";
 import moment from "moment";
 import { globalStyles } from "../../styles/globalStyles";
 import { useTheme } from "../../theme/ThemeContext";
+import { useNavigation } from "@react-navigation/native";
 
 const DailySummary = ({ tasks }) => {
+  const navigation = useNavigation();
   const today = moment().startOf("day");
   const { theme } = useTheme();
 
@@ -85,6 +87,7 @@ const DailySummary = ({ tasks }) => {
               justifyContent: "center",
             },
           ]}
+          onPress={() => navigation.navigate("CreateTask")}
         >
           <Text
             style={[

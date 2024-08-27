@@ -30,7 +30,7 @@ export const ThemeProvider = ({ children }) => {
   const [isDarkMode, setIsDarkMode] = useState(systemColorScheme === "dark");
 
   useEffect(() => {
-    setIsDarkMode(systemColorScheme === "light");
+    setIsDarkMode(systemColorScheme === "dark");
   }, [systemColorScheme]);
 
   const toggleTheme = () => {

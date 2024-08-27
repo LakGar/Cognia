@@ -58,7 +58,6 @@ const TaskCard = ({ task }) => {
 
   const assignedTo = task.assignedTo;
   const assignedBy = task.assignedBy || "";
-  console.log(assignedTo);
 
   // Format the date and time
   const formattedDate = new Date(task.dueDate).toLocaleDateString("en-US", {

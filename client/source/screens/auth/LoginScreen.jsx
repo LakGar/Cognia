@@ -45,7 +45,7 @@ const LoginScreen = () => {
       // Fetch and set user info
       const result = await dispatch(getUserInfo(token)).unwrap();
       if (result) {
-        navigation.navigate("Main", { screen: "Profile" }); // Navigate to the main screen
+        navigation.navigate("Main", { screen: "Home" }); // Navigate to the main screen
       } else {
         setError("Failed to fetch user info");
       }

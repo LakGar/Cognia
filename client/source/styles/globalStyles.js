@@ -31,6 +31,12 @@ export const globalStyles = StyleSheet.create({
     color: "grey",
     fontWeight: "500",
   },
+  label: {
+    fontSize: 15,
+    fontWeight: "bold",
+    marginBottom: 5,
+    color: "grey",
+  },
   // screenContainerCenter: {
   //   flex: 1,
   //   width: "100%",
@@ -97,6 +103,10 @@ export const globalStyles = StyleSheet.create({
   // buttonTextSecondary: {
   //   color: "#fff",
   // },
+  textInput: {
+    flex: 1,
+    textAlign: "right",
+  },
   dateText: {
     fontSize: 15,
     fontWeight: "600",

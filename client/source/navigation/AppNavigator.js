@@ -7,6 +7,8 @@ import MoodSelector from "../components/home/mood/MoodSelector";
 import TaskDetail from "../components/Details/TaskDetail";
 import EditProfile from "../components/Edit/EditProfile";
 import CreateTask from "../components/Create/CreateTask";
+import AddPatientInfo from "../components/Create/AddPatientInfo";
+import EditPatient from "../components/Edit/EditPatient";
 
 const Stack = createStackNavigator();
 
@@ -18,6 +20,8 @@ const AppNavigator = () => {
       <Stack.Screen name="TaskDetail" component={TaskDetail} />
       <Stack.Screen name="EditProfile" component={EditProfile} />
       <Stack.Screen name="CreateTask" component={CreateTask} />
+      <Stack.Screen name="AddPatientInfo" component={AddPatientInfo} />
+      <Stack.Screen name="EditPatient" component={EditPatient} />
     </Stack.Navigator>
   );
 };

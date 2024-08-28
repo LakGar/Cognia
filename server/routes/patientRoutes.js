@@ -16,7 +16,6 @@ router.post("/patient", auth, async (req, res) => {
     sleep,
     mood,
     activity,
-    emergencyContacts,
   } = req.body;
 
   try {
@@ -28,7 +27,6 @@ router.post("/patient", auth, async (req, res) => {
       sleep,
       mood,
       activity,
-      emergencyContacts,
     });
 
     const savedPatient = await patient.save();
@@ -55,8 +53,10 @@ router.put("/patient/:userId", auth, async (req, res) => {
     sleep,
     mood,
     activity,
+    test,
     emergencyContacts,
   } = req.body;
+  console.log(`Received request to update patient for user ${userId}`);
 
   try {
     const user = await User.findById(userId).populate("patientInfo");
@@ -77,6 +77,7 @@ router.put("/patient/:userId", auth, async (req, res) => {
     if (mood) patient.mood = mood;
     if (activity) patient.activity = activity;
     if (emergencyContacts) patient.emergencyContacts = emergencyContacts;
+    if (test) patient.test = test;
 
     await patient.save();
 
@@ -90,19 +91,19 @@ router.put("/patient/:userId", auth, async (req, res) => {
 //Get patient information
 router.get("/patient/:userId", auth, async (req, res) => {
   const { userId } = req.params;
-
+  console.log(`getting patient with user ${userId}`);
   try {
-    const user = await User.findById(userId).populate("patientInfo");
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+    const patient = await Patient.findById(userId); // Assuming userId is the patient ID
+    if (!patient) {
+      return res.status(404).json({ message: "Patient not found" });
     }
-
-    res.json(user.patientInfo);
+    res.json(patient);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
   }
 });
+
 // Delete PatientInfo for the userID sent
 router.delete("/patient/:userId", auth, async (req, res) => {
   const { userId } = req.params;
@@ -414,5 +415,79 @@ router.delete(
     }
   }
 );
+
+//Add a test
+router.post("/patients/:id/tests", auth, async (req, res) => {
+  const { id } = req.params;
+  const { testName, testResult, testDate } = req.body;
+
+  try {
+    const patient = await Patient.findById(id);
+    if (!patient) {
+      return res.status(404).json({ message: "Patient not found" });
+    }
+
+    patient.test.push({ testName, testResult, testDate });
+    await patient.save();
+
+    res.status(201).json(patient.test);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+//update a test
+router.put("/patients/:id/tests/:testId", auth, async (req, res) => {
+  const { id, testId } = req.params;
+  const { testName, testResult, testDate } = req.body;
+
+  try {
+    const patient = await Patient.findById(id);
+    if (!patient) {
+      return res.status(404).json({ message: "Patient not found" });
+    }
+
+    const testEntry = patient.test.id(testId);
+    if (!testEntry) {
+      return res.status(404).json({ message: "Test entry not found" });
+    }
+
+    if (testName) testEntry.testName = testName;
+    if (testResult) testEntry.testResult = testResult;
+    if (testDate) testEntry.testDate = testDate;
+
+    await patient.save();
+
+    res.json(patient.test);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+router.delete("/patients/:id/tests/:testId", auth, async (req, res) => {
+  const { id, testId } = req.params;
+
+  try {
+    const patient = await Patient.findById(id);
+    if (!patient) {
+      return res.status(404).json({ message: "Patient not found" });
+    }
+
+    const testEntry = patient.test.id(testId);
+    if (!testEntry) {
+      return res.status(404).json({ message: "Test entry not found" });
+    }
+
+    testEntry.remove();
+    await patient.save();
+
+    res.json({ message: "Test entry deleted" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
 
 module.exports = router;

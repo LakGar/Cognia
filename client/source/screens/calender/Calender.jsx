@@ -4,6 +4,7 @@ import WeekView from "../../components/calender/WeekView";
 import TaskTest from "../../test/TaskTest";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchTasks } from "../../redux/taskSlice";
+import PatientInfoTest from "../../test/patientInfoTest";
 
 const Calender = () => {
   const dispatch = useDispatch();
@@ -18,7 +19,8 @@ const Calender = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      <WeekView tasks={tasks} />
+      {/* <WeekView tasks={tasks} /> */}
+      <PatientInfoTest />
     </View>
   );
 };

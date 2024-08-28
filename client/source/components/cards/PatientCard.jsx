@@ -10,32 +10,93 @@ import {
 import { useTheme } from "../../theme/ThemeContext";
 import Icon from "react-native-vector-icons/Ionicons";
 import { globalStyles } from "../../styles/globalStyles";
+import { useNavigation } from "@react-navigation/native";
 
-const PatientCard = () => {
+const PatientCard = ({ patientInfo }) => {
+  const navigation = useNavigation();
   const [isExpanded, setIsExpanded] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const { theme } = useTheme();
+  const [selectedItem, setSelectedItem] = useState(null);
+  const { theme, isDarkMode } = useTheme();
 
   const toggleCard = () => {
     setIsExpanded(!isExpanded);
   };
 
-  const toggleModal = () => {
+  const toggleModal = (item) => {
+    setSelectedItem(item);
     setIsModalVisible(!isModalVisible);
   };
 
-  const renderDetail = (label, value) => (
+  const renderDetail = (label, value, unit) => (
     <View style={styles.statRow}>
       <Text
-        style={[styles.scoreText, { color: theme.text, fontWeight: "400" }]}
+        style={[styles.scoreText, { color: theme.text, fontWeight: "500" }]}
       >
         {label}
       </Text>
       <View style={[styles.score, { backgroundColor: "lightgrey" }]}>
-        <Text style={[styles.scoreText, { color: "black" }]}>{value}</Text>
+        <Text style={[styles.scoreText, { color: "black" }]}>
+          {value} {unit}
+        </Text>
       </View>
     </View>
   );
+
+  const renderListAsButtons = (label, items) => {
+    if (items.length === 0) {
+      return (
+        <TouchableOpacity
+          onPress={() => navigation.navigate("EditPatient", { patientInfo })}
+          style={[styles.addButton]}
+        >
+          <Text style={{ color: "white" }}>Add {label}</Text>
+        </TouchableOpacity>
+      );
+    }
+    return items.map((item, index) => (
+      <TouchableOpacity
+        key={index}
+        onPress={() => toggleModal(item)}
+        style={[
+          styles.itemButton,
+          { backgroundColor: isDarkMode ? "grey" : "lightgrey" },
+        ]}
+      >
+        <Text style={[styles.buttonText, { color: theme.text }]}>{item}</Text>
+      </TouchableOpacity>
+    ));
+  };
+
+  if (!patientInfo || !patientInfo.medicalInformation) {
+    return (
+      <View style={{ paddingHorizontal: 20, marginTop: 10 }}>
+        <Text
+          style={{
+            color: theme.text,
+            fontWeight: "600",
+            fontSize: 16,
+            marginBottom: 10,
+          }}
+        >
+          PatientCard
+        </Text>
+        <Text style={{ color: theme.text, marginBottom: 10 }}>
+          Looks like there is no medical information on you. Add some to track
+          your progress.
+        </Text>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("EditPatient", { patientInfo })}
+          style={styles.addButton}
+        >
+          <Text style={{ color: "white" }}>Add Medical Information</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  const medicalInfo = patientInfo?.medicalInformation;
+  const height = medicalInfo.height.feet + "'" + medicalInfo.height.inches;
 
   return (
     <View style={{ paddingHorizontal: 20, marginTop: 10 }}>
@@ -72,39 +133,48 @@ const PatientCard = () => {
             { backgroundColor: theme.cardBG },
           ]}
         >
+          <TouchableOpacity
+            style={{ position: "absolute", top: 10, right: 20 }}
+            onPress={() => navigation.navigate("EditPatient", { patientInfo })}
+          >
+            <Text style={{ color: theme.accent, fontWeight: "500" }}>Edit</Text>
+          </TouchableOpacity>
           <View style={styles.detailsContainer}>
-            {renderDetail("Age", "75")}
-            {renderDetail("Weight", "70 kg")}
-            {renderDetail("Height", "170 cm")}
-            {renderDetail("Blood Type", "O+")}
-            {renderDetail("Dementia Stage", "Moderate")}
+            {renderDetail("Age", medicalInfo.age, "")}
+            {renderDetail("Weight", medicalInfo.weight, "kg")}
+            {renderDetail("Height", height, "ft")}
+            {renderDetail("Blood Type", medicalInfo.bloodType)}
+            {renderDetail("Dementia Stage", medicalInfo.dementiaStage)}
 
-            <TouchableOpacity
-              onPress={toggleModal}
-              style={[
-                globalStyles.button,
-                {
-                  backgroundColor: theme.secondary,
-                  justifyContent: "center",
-                },
-              ]}
-            >
-              <Text style={[styles.prescriptionsText]}>Prescriptions</Text>
-            </TouchableOpacity>
-
+            <Text style={[styles.sectionTitle, { color: theme.text }]}>
+              Medications
+            </Text>
+            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 5 }}>
+              {renderListAsButtons("Medications", medicalInfo.medications)}
+            </View>
+            <Text style={[styles.sectionTitle, { color: theme.text }]}>
+              Surgeries
+            </Text>
+            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 5 }}>
+              {renderListAsButtons("Surgeries", medicalInfo.surgeries)}
+            </View>
+            <Text style={[styles.sectionTitle, { color: theme.text }]}>
+              Allergies
+            </Text>
+            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 5 }}>
+              {renderListAsButtons("Allergies", medicalInfo.allergies)}
+            </View>
             <Modal
               visible={isModalVisible}
               transparent={true}
               animationType="slide"
-              onRequestClose={toggleModal}
+              onRequestClose={() => toggleModal(null)}
             >
               <View style={styles.modalContainer}>
                 <View style={styles.modalContent}>
-                  <Text style={styles.modalTitle}>Prescriptions</Text>
-                  <Text>- Prescription 1</Text>
-                  <Text>- Prescription 2</Text>
-                  <Text>- Prescription 3</Text>
-                  <Button title="Close" onPress={toggleModal} />
+                  <Text style={styles.modalTitle}>Details</Text>
+                  <Text>{selectedItem}</Text>
+                  <Button title="Close" onPress={() => toggleModal(null)} />
                 </View>
               </View>
             </Modal>
@@ -122,9 +192,8 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 3,
   },
-
   detailsContainer: {
-    marginTop: 10,
+    marginTop: 20,
   },
   statRow: {
     flexDirection: "row",
@@ -139,10 +208,32 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   scoreText: {
-    fontWeight: "600",
-    fontSize: 16,
+    fontWeight: "500",
+    fontSize: 15,
   },
-  prescriptionsText: { color: "white", textAlign: "center", padding: 10 },
+  sectionTitle: {
+    fontWeight: "600",
+    fontSize: 18,
+    marginTop: 15,
+    marginBottom: 5,
+  },
+  itemButton: {
+    backgroundColor: "grey",
+    padding: 10,
+    borderRadius: 5,
+    marginVertical: 5,
+  },
+  buttonText: {
+    fontSize: 14,
+  },
+  addButton: {
+    marginTop: 10,
+    padding: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 5,
+    backgroundColor: "dodgerblue",
+  },
   modalContainer: {
     flex: 1,
     justifyContent: "center",

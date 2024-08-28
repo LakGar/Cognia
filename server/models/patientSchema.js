@@ -3,6 +3,14 @@ const { Schema } = mongoose;
 
 const patientSchema = new Schema({
   medicalInformation: {
+    age: {
+      type: Number,
+      required: true,
+    },
+    dementiaStage: {
+      type: String,
+      required: true,
+    },
     height: {
       feet: { type: Number },
       inches: { type: Number },
@@ -13,6 +21,13 @@ const patientSchema = new Schema({
     medications: [{ type: String }],
     surgeries: [{ type: String }],
   },
+  test: [
+    {
+      testName: { type: String, required: true },
+      testResult: { type: String, required: true },
+      testDate: { type: Date, required: true },
+    },
+  ],
   doctor: [{ type: Schema.Types.ObjectId, ref: "User" }],
   caregiver: [{ type: Schema.Types.ObjectId, ref: "User" }],
   family: [{ type: Schema.Types.ObjectId, ref: "User" }],
@@ -54,6 +69,14 @@ const patientSchema = new Schema({
       relationship: { type: String, required: true },
       phone: { type: String, required: true },
       email: { type: String },
+    },
+  ],
+  chronicConditions: [{ type: String }],
+  immunizations: [
+    {
+      vaccineName: { type: String },
+      dateAdministered: { type: Date },
+      provider: { type: String },
     },
   ],
   createdAt: { type: Date, default: Date.now },

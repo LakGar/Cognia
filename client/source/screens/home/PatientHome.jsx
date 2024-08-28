@@ -11,10 +11,12 @@ import { useTheme } from "../../theme/ThemeContext";
 import { useDispatch, useSelector } from "react-redux";
 import { getUserInfo } from "../../redux/authSlice";
 import { fetchTasks } from "../../redux/taskSlice";
+import { useNavigation } from "@react-navigation/native";
 
 const PatientHome = () => {
   const { theme } = useTheme();
   const dispatch = useDispatch();
+  const navigation = useNavigation();
   const { userInfo, userToken } = useSelector((state) => state.auth);
   const tasks = useSelector((state) => state.task.tasks);
   const loading = useSelector((state) => state.task?.loading);
@@ -27,6 +29,14 @@ const PatientHome = () => {
       dispatch(fetchTasks(userToken));
     }
   }, [dispatch, userToken, userInfo, tasks.length]);
+
+  console.log(`[PatientHome] userInfo: ${JSON.stringify(userInfo, null, 2)}`);
+
+  useEffect(() => {
+    if (userInfo && !userInfo.patientInfo) {
+      navigation.navigate("AddPatientInfo");
+    }
+  });
 
   return (
     <View

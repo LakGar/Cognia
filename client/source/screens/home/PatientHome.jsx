@@ -12,12 +12,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { getUserInfo } from "../../redux/authSlice";
 import { fetchTasks } from "../../redux/taskSlice";
 import { useNavigation } from "@react-navigation/native";
+import { getPatientById } from "../../redux/patientSlice";
 
 const PatientHome = () => {
   const { theme } = useTheme();
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const { userInfo, userToken } = useSelector((state) => state.auth);
+  const patientInfoRedux = useSelector((state) => state.patient.currentPatient);
+
   const tasks = useSelector((state) => state.task.tasks);
   const loading = useSelector((state) => state.task?.loading);
 
@@ -38,6 +41,14 @@ const PatientHome = () => {
     }
   });
 
+  useEffect(() => {
+    if (userToken && userInfo?.patientInfo) {
+      dispatch(
+        getPatientById({ token: userToken, userId: userInfo.patientInfo })
+      );
+    }
+  }, [dispatch, userToken, userInfo?.patientInfo]);
+
   return (
     <View
       style={[
@@ -54,8 +65,8 @@ const PatientHome = () => {
           />
         )}
         <DailySummary tasks={tasks} />
-        <SectionSleepMood />
-        <StepsNActivityTracker />
+        <SectionSleepMood patientInfo={patientInfoRedux} />
+        <StepsNActivityTracker patientInfo={patientInfoRedux} />
         <SupplementaryButtons />
       </ScrollView>
       <EmergencyButton />

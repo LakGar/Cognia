@@ -19,8 +19,7 @@ const Calender = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      {/* <WeekView tasks={tasks} /> */}
-      <PatientInfoTest />
+      <WeekView tasks={tasks} />
     </View>
   );
 };

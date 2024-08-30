@@ -3,8 +3,9 @@ import React from "react";
 import { useTheme } from "../../theme/ThemeContext";
 import { globalStyles } from "../../styles/globalStyles";
 
-const CareTeam = () => {
+const CareTeam = ({ patientInfo }) => {
   const { theme } = useTheme();
+
   const renderCard = ({ image, name, username, type }) => {
     return (
       <View
@@ -82,6 +83,16 @@ const CareTeam = () => {
       </View>
     );
   };
+
+  // Check if all care team arrays are empty
+  if (
+    (!patientInfo.doctor || patientInfo.doctor.length === 0) &&
+    (!patientInfo.caregiver || patientInfo.caregiver.length === 0) &&
+    (!patientInfo.family || patientInfo.family.length === 0)
+  ) {
+    return null; // No care team members, so render nothing
+  }
+
   return (
     <View style={{ paddingHorizontal: 20, marginTop: 10 }}>
       <Text

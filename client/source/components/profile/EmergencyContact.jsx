@@ -10,18 +10,25 @@ import _ from "lodash";
 const EmergencyContact = ({ patientInfo }) => {
   const { theme } = useTheme();
   const [isModalVisible, setModalVisible] = useState(false);
+  const [contactToEdit, setContactToEdit] = useState(null);
   const dispatch = useDispatch();
   const { userInfo, userToken } = useSelector((state) => state.auth);
   const emergencyContacts = patientInfo?.emergencyContacts || [];
 
-  const handleAddContact = (newContact) => {
+  const handleAddOrUpdateContact = (contact) => {
     const updatedPatientInfo = _.cloneDeep(patientInfo);
 
-    if (!updatedPatientInfo.emergencyContacts) {
-      updatedPatientInfo.emergencyContacts = [];
+    if (contactToEdit) {
+      const index = updatedPatientInfo.emergencyContacts.findIndex(
+        (c) => c.phone === contactToEdit.phone
+      );
+      updatedPatientInfo.emergencyContacts[index] = contact;
+    } else {
+      if (!updatedPatientInfo.emergencyContacts) {
+        updatedPatientInfo.emergencyContacts = [];
+      }
+      updatedPatientInfo.emergencyContacts.push(contact);
     }
-
-    updatedPatientInfo.emergencyContacts.push(newContact);
 
     dispatch(
       updatePatient({
@@ -30,6 +37,12 @@ const EmergencyContact = ({ patientInfo }) => {
         patientData: updatedPatientInfo,
       })
     );
+    setContactToEdit(null); // Reset edit mode
+  };
+
+  const handleEditContact = (contact) => {
+    setContactToEdit(contact);
+    setModalVisible(true);
   };
 
   return (
@@ -45,60 +58,67 @@ const EmergencyContact = ({ patientInfo }) => {
         Emergency Contact
       </Text>
       {emergencyContacts.length > 0 ? (
-        <View
-          style={[
-            {
-              backgroundColor: "rgba(255, 0,0,0.4)",
-              flexDirection: "row",
-              padding: 15,
-              borderRadius: 3,
-              alignItems: "center",
-              gap: 10,
-            },
-            globalStyles.shadow,
-          ]}
-        >
-          <View style={styles.left}>
-            <View style={styles.profileImage}>
-              <Text style={styles.nameLetter}>
-                {emergencyContacts[0].name.charAt(0).toUpperCase()}
-              </Text>
-            </View>
-          </View>
-          <View style={styles.right}>
-            <View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Text style={[globalStyles.subTitle, { color: "white" }]}>
-                  {emergencyContacts[0].name}
+        emergencyContacts.map((contact, index) => (
+          <View
+            key={index}
+            style={[
+              {
+                backgroundColor: "rgba(255, 0,0,0.4)",
+                flexDirection: "row",
+                padding: 15,
+                borderRadius: 3,
+                alignItems: "center",
+                gap: 10,
+                marginBottom: 10,
+              },
+              globalStyles.shadow,
+            ]}
+          >
+            <View style={styles.left}>
+              <View style={styles.profileImage}>
+                <Text style={styles.nameLetter}>
+                  {contact.name.charAt(0).toUpperCase()}
                 </Text>
               </View>
-              <Text style={[globalStyles.username, { color: "red" }]}>
-                {emergencyContacts[0].phone}
-              </Text>
             </View>
-            <View style={{ flexDirection: "row", height: 40, gap: 10 }}>
-              <TouchableOpacity
-                style={[
-                  globalStyles.button,
-                  {
-                    backgroundColor: "red",
-                    width: 130,
-                    justifyContent: "center",
-                  },
-                ]}
-              >
-                <Text style={[styles.buttonText, { color: "white" }]}>
-                  Call
+            <View style={styles.right}>
+              <View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Text style={[globalStyles.subTitle, { color: "white" }]}>
+                    {contact.name}
+                  </Text>
+                  <TouchableOpacity onPress={() => handleEditContact(contact)}>
+                    <Text style={{ color: "white", fontSize: 14 }}>Edit</Text>
+                  </TouchableOpacity>
+                </View>
+                <Text style={[globalStyles.username, { color: "pink" }]}>
+                  +1 {contact.phone}
                 </Text>
-              </TouchableOpacity>
+              </View>
+              <View style={{ flexDirection: "row", height: 40, gap: 10 }}>
+                <TouchableOpacity
+                  style={[
+                    globalStyles.button,
+                    {
+                      backgroundColor: "red",
+                      width: 130,
+                      justifyContent: "center",
+                    },
+                  ]}
+                >
+                  <Text style={[styles.buttonText, { color: "white" }]}>
+                    Call
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-        </View>
+        ))
       ) : (
         <View>
           <Text style={{ color: "white", marginBottom: 10 }}>
@@ -126,8 +146,12 @@ const EmergencyContact = ({ patientInfo }) => {
 
       <AddEmergencyContactModal
         isVisible={isModalVisible}
-        onClose={() => setModalVisible(false)}
-        onSave={handleAddContact}
+        onClose={() => {
+          setModalVisible(false);
+          setContactToEdit(null);
+        }}
+        onSave={handleAddOrUpdateContact}
+        contactToEdit={contactToEdit}
       />
     </View>
   );
@@ -154,7 +178,7 @@ const styles = StyleSheet.create({
   },
   nameLetter: {
     fontSize: 38,
-    color: "rgba(255,0,0,0.4)",
+    color: "rgba(255,255,255,0.8)",
     fontWeight: "800",
   },
   buttonText: {

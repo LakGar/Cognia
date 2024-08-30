@@ -45,7 +45,6 @@ export const updatePatient = createAsyncThunk(
       const response = await patientService.updatePatient(
         userId,
         token,
-
         patientData
       );
       return response;

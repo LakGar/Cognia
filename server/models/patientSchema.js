@@ -46,10 +46,9 @@ const patientSchema = new Schema({
       _id: { type: Schema.Types.ObjectId, auto: true },
       moodType: {
         type: String,
-        enum: ["happy", "sad", "angry", "anxious", "excited", "calm"],
+        enum: ["happy", "sad", "angry", "anxious", "disgusted"],
         required: true,
       },
-      intensity: { type: Number, min: 1, max: 10, required: true },
       notes: { type: String, default: "" },
       createdAt: { type: Date, default: Date.now },
     },
